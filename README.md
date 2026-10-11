@@ -80,7 +80,7 @@ Run from this package root:
 git clone https://github.com/nxp-imx/mwifiex.git && cd mwifiex
 git checkout lf-6.18.2_1.0.0
 git apply ../ps5-iw620.patch
-make CONFIG_OBJTOOL=
+make
 ```
 
 ## Load

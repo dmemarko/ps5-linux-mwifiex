@@ -154,7 +154,7 @@ build_driver() {
 	prepare_source
 
 	say "Building modules for $KERNEL_RELEASE"
-	make -C "$DRIVER_DIR" CONFIG_OBJTOOL= KERNELDIR="$KERNELDIR" ARCH=x86 -j"$(nproc)"
+	make -C "$DRIVER_DIR" PWD="$DRIVER_DIR" KERNELDIR="$KERNELDIR" ARCH=x86 -j"$(nproc)"
 
 	[ -f "$DRIVER_DIR/mlan.ko" ] || die "missing built module: $DRIVER_DIR/mlan.ko"
 	[ -f "$DRIVER_DIR/moal.ko" ] || die "missing built module: $DRIVER_DIR/moal.ko"
