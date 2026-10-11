@@ -16,6 +16,7 @@ KERNEL71_PATCH=$script_dir/ps5-iw620-kernel71-compat.patch
 KERNEL72_PATCH=$script_dir/ps5-iw620-kernel72-compat.patch
 RTNL_PATCH=$script_dir/ps5-iw620-rtnl-bounded-wait.patch
 HE_PATCH=$script_dir/ps5-iw620-he.patch
+TX_PATCH=$script_dir/ps5-iw620-tx-min128.patch
 
 MODULE_DIR=/lib/modules/$KERNEL_RELEASE/extra/ps5-iw620
 MODPROBE_CONF=/etc/modprobe.d/ps5-iw620.conf
@@ -158,6 +159,16 @@ prepare_source() {
 		say "IW620 HE patch is already applied"
 	else
 		die "HE patch does not apply cleanly in $DRIVER_DIR"
+	fi
+
+	[ -f "$TX_PATCH" ] || die "patch file not found: $TX_PATCH"
+	if git_driver apply --check "$TX_PATCH" >/dev/null 2>&1; then
+		say "Applying IW620 short TX DMA padding"
+		git_driver apply "$TX_PATCH"
+	elif git_driver apply -R --check "$TX_PATCH" >/dev/null 2>&1; then
+		say "IW620 TX padding patch is already applied"
+	else
+		die "TX padding patch does not apply cleanly in $DRIVER_DIR"
 	fi
 }
 
