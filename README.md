@@ -14,8 +14,20 @@ generated against the tree the earlier ones produce:
 | `ps5-iw620-cmd-timeout-recover.patch` | Command-timeout handling: always release the timed-out command and wake its ioctl waiter, then decide whether to carry on or declare a hang. |
 | `ps5-iw620-kernel71-compat.patch` | cfg80211 API changes for kernel >= 7 (applied conditionally). |
 | `ps5-iw620-rtnl-bounded-wait.patch` | Bounds the firmware round-trips in `woal_cfg80211_dump_station_info()` so a dead firmware cannot strand RTNL. |
+| `ps5-iw620-he.patch` | Corrects the IW620 5 GHz HE profile across firmware configuration, association and cfg80211; requests TX BA timeout zero. |
 
-### Why the last two exist
+### IW620 HE and aggregation
+
+The observed HE capability advertises PPE thresholds without supplying the bytes.
+The HE patch recognizes that exact capability, supplies the corrected 5 GHz
+profile and keeps its firmware/association/cfg80211 copies consistent. On
+2.4 GHz it clears the unsupported PPE flag. Unknown capability inputs are
+left alone. The default STA TX block-ack window changes from 32 to 64 frames
+by removing the timeout patch's override, and IW620 STA requests use a zero
+TX BA inactivity timeout. These changes target the burst failure reported in
+[#3](https://github.com/ps5-linux/ps5-linux-mwifiex/issues/3).
+
+### Timeout handling
 
 A firmware lockup used to freeze the **entire machine**, not just wifi.
 `woal_cfg80211_dump_station_info()` runs while cfg80211 holds the wiphy mutex and
